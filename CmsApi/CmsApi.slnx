@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="CmsApi.AppHost/CmsApi.AppHost.csproj" />
+  <Project Path="CmsApi.Server/CmsApi.Server.csproj" />
+</Solution>

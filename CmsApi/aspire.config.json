@@ -1,0 +1,5 @@
+{
+  "appHost": {
+    "path": "CmsApi.AppHost/CmsApi.AppHost.csproj"
+  }
+}
