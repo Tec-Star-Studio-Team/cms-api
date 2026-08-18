@@ -1,6 +1,25 @@
+using CmsApi.Application.Common.Behaviors;
+using CmsApi.Infrastructure;
+using CmsApi.Presentation.Middleware;
+using CmsApi.Server.Presentation;
+using FluentValidation;
+using Mediator;
+using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services
+    .AddInfrastructure(builder.Configuration)
+    .AddPresentation();
+
+// Validation pipeline behavior
+builder.Services.AddTransient(
+    typeof(IPipelineBehavior<,>),
+    typeof(ValidationBehavior<,>));
+
+// FluentValidation — scans all validators in the assembly
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 // Add service defaults & Aspire client integrations.
 builder.AddServiceDefaults();
@@ -9,7 +28,24 @@ builder.AddServiceDefaults();
 builder.Services.AddProblemDetails();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    // Adds the 'Authorization: Bearer <token>' button in Scalar UI
+    options.AddDocumentTransformer((document, context, cancellationToken) =>
+    {
+        document.Components ??= new();
+        document.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
+        document.Components.SecuritySchemes.Add("Bearer", new OpenApiSecurityScheme
+        {
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT",
+            Description = "Enter your JWT token."
+        });
+
+        return Task.CompletedTask;
+    });
+});
 
 var app = builder.Build();
 
@@ -25,6 +61,12 @@ if (app.Environment.IsDevelopment())
     {
         options.Title = "CMS API";
         options.Theme = ScalarTheme.DeepSpace;
+
+        // Enables the JWT Bearer input field in the UI
+        options.AddHttpAuthentication("Bearer", auth =>
+        {
+            auth.Description = "Enter your JWT token.";
+        });
     });
 }
 
@@ -46,7 +88,12 @@ api.MapGet("weatherforecast", () =>
 })
 .WithName("GetWeatherForecast");
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapDefaultEndpoints();
+app.MapEndpoints();
 
 app.UseFileServer();
 
