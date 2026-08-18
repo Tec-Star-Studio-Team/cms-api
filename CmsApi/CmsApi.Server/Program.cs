@@ -1,9 +1,11 @@
 using CmsApi.Application.Common.Behaviors;
 using CmsApi.Infrastructure;
 using CmsApi.Presentation.Middleware;
+using CmsApi.Server.Infrastructure.Persistence;
 using CmsApi.Server.Presentation;
 using FluentValidation;
 using Mediator;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 
@@ -11,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
     .AddInfrastructure(builder.Configuration)
-    .AddPresentation();
+    .AddPresentation(builder.Configuration);
 
 // Validation pipeline behavior
 builder.Services.AddTransient(
@@ -54,6 +56,13 @@ app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
+    // Apply pending migrations automatically on startup
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await db.Database.MigrateAsync(); // ← applies pending migrations
+    }
+
     app.MapOpenApi();
 
     // Scalar UI available at /scalar/v1
@@ -68,8 +77,13 @@ if (app.Environment.IsDevelopment())
             auth.Description = "Enter your JWT token.";
         });
     });
-}
 
+    app.UseCors(CorsPolicy.Development); // ← development policy
+}
+else
+{
+    app.UseCors(CorsPolicy.Production); // ← production policy
+}
 
 string[] summaries = ["Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"];
 

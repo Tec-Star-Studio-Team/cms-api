@@ -8,7 +8,8 @@ namespace CmsApi.Server.Presentation;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddPresentation(this IServiceCollection services)
+    public static IServiceCollection AddPresentation(this IServiceCollection services,
+        IConfiguration configuration)
     {
         services.AddControllers();
         services.AddEndpointsApiExplorer();
@@ -34,6 +35,34 @@ public static class DependencyInjection
 
         foreach (var type in endpointTypes)
             services.AddTransient(typeof(IEndpoint), type);
+
+        // CORS
+        services.AddCors(options =>
+        {
+            options.AddPolicy(CorsPolicy.Development, policy =>
+            {
+                policy
+                    .WithOrigins("http://localhost:3000",  // React
+                                 "http://localhost:5173")  // Vite
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+            });
+
+            options.AddPolicy(CorsPolicy.Production, policy =>
+            {
+                // Read allowed origins from configuration
+                var allowedOrigins = configuration
+                    .GetSection("Cors:AllowedOrigins")
+                    .Get<string[]>() ?? [];
+
+                policy
+                    .WithOrigins(allowedOrigins)
+                    .AllowAnyHeader()
+                    .WithMethods("GET", "POST", "PUT", "PATCH", "DELETE")
+                    .AllowCredentials();
+            });
+        });
 
         return services;
     }
