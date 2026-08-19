@@ -1,4 +1,7 @@
 ﻿using CmsApi.Server.Application.Features.Project.Commands.CreateProject;
+using CmsApi.Server.Application.Features.Project.Queries.GetProjectById;
+using CmsApi.Server.Presentation.Extensions;
+using FluentValidation;
 using Mediator;
 
 namespace CmsApi.Server.Presentation.Endpoints.Projects;
@@ -20,6 +23,24 @@ public class ProjectsEndpoints : IEndpoint
         })
         .WithName("Create")
         .WithSummary("Create a new project")
+        .AllowAnonymous(); // Remove after testing
+
+        group.MapGet("/{id}", async (
+            int id,
+            IMediator mediator,
+            CancellationToken cancellationToken) =>
+        {
+            var query = new GetProjectByIdQuery(id);
+            var validator = new GetProjectByIdValidator();
+            await validator.ValidateAndThrowAsync(query, cancellationToken);
+
+            var result = await mediator.Send(query, cancellationToken);
+
+            return result.ToHttpResult();
+        })
+        .WithName("Get")
+        .WithSummary("Get by ID")
         .AllowAnonymous();
+        //.RequireAuthorization();
     }
 }
