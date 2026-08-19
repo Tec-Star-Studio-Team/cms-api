@@ -1,4 +1,10 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Commands.md" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="Cms.LoadTests/Cms.LoadTests.csproj" Id="188ba531-4d0a-4093-a5a8-684d936672ac" />
+  </Folder>
   <Project Path="CmsApi.AppHost/CmsApi.AppHost.csproj" />
   <Project Path="CmsApi.Server/CmsApi.Server.csproj" />
 </Solution>
