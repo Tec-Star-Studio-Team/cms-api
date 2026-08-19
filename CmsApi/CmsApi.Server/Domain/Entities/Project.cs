@@ -4,11 +4,11 @@ namespace CmsApi.Server.Domain.Entities;
 
 public sealed class Project : BaseEntity<int>
 {
-    private Project() { }
+    public Project() { }
 
-    public string Name { get; private set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
 
-    public string Description { get; private set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
 
     public static Project Create(string name, string description)
     {

@@ -4,6 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <UserSecretsId>d3f22239-ac7a-4b5b-a401-2436248a560f</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -40,9 +41,10 @@
     <Folder Include="Application\Features\App\Commands\CreateApp\" />
     <Folder Include="Application\Features\App\DTOs\" />
     <Folder Include="Application\Features\App\Queries\GetAppById\" />
+    <Folder Include="Application\Features\Project\DTOs\" />
+    <Folder Include="Application\Features\Project\Queries\" />
     <Folder Include="Infrastructure\Persistence\Migrations\" />
     <Folder Include="Presentation\Endpoints\Apps\" />
     <Folder Include="Presentation\Endpoints\Templates\" />
-    <Folder Include="Presentation\Endpoints\Projects\" />
   </ItemGroup>
 </Project>
