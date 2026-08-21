@@ -23,7 +23,7 @@ public class ProjectsEndpoints : IEndpoint
         })
         .WithName("Create")
         .WithSummary("Create a new project")
-        .AllowAnonymous(); // Remove after testing
+        .RequireAuthorization();
 
         group.MapGet("/{id}", async (
             int id,
@@ -40,7 +40,6 @@ public class ProjectsEndpoints : IEndpoint
         })
         .WithName("Get")
         .WithSummary("Get by ID")
-        .AllowAnonymous();
-        //.RequireAuthorization();
+        .RequireAuthorization();
     }
 }
