@@ -1,0 +1,1 @@
+# Verification Checklist (Manual Harness)
