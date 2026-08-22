@@ -1,7 +1,7 @@
 ﻿using CmsApi.Server.Domain.Interfaces.Repositories;
 using Mediator;
 
-namespace CmsApi.Server.Application.Features.Project.Commands.CreateProject;
+namespace CmsApi.Server.Application.Features.Projects.Commands.CreateProject;
 
 public sealed class CreateProjectHandler(
     IUnitOfWork unitOfWork,

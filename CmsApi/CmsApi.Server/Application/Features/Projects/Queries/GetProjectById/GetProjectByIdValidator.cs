@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace CmsApi.Server.Application.Features.Project.Queries.GetProjectById;
+namespace CmsApi.Server.Application.Features.Projects.Queries.GetProjectById;
 
 public sealed class GetProjectByIdValidator : AbstractValidator<GetProjectByIdQuery>
 {

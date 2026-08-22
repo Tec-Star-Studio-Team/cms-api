@@ -18,4 +18,11 @@ public sealed class Project : BaseEntity<int>
             Description = description
         };
     }
+
+    public void Update(string name, string description)
+    {
+        this.Name = name;
+        this.Description = description;
+        this.SetUpdatedAt();
+    }
 }

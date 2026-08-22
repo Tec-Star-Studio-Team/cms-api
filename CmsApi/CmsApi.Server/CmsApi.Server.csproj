@@ -38,10 +38,11 @@
 
   <ItemGroup>
     <Folder Include="Application\Common\Exceptions\" />
-    <Folder Include="Application\Features\App\Commands\CreateApp\" />
-    <Folder Include="Application\Features\App\DTOs\" />
-    <Folder Include="Application\Features\App\Queries\GetAppById\" />
-    <Folder Include="Application\Features\Project\DTOs\" />
+    <Folder Include="Application\Features\Apps\Commands\CreateApp\" />
+    <Folder Include="Application\Features\Apps\DTOs\" />
+    <Folder Include="Application\Features\Apps\Queries\GetAppById\" />
+    <Folder Include="Application\Features\Projects\DTOs\" />
+    <Folder Include="Application\Features\Projects\Queries\GetPaginatedProjects\" />
     <Folder Include="Infrastructure\Persistence\Migrations\" />
     <Folder Include="Presentation\Endpoints\Apps\" />
     <Folder Include="Presentation\Endpoints\Templates\" />
