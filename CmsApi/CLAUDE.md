@@ -12,6 +12,7 @@ endpoints and data.
 
 - C# .NET 10+
 - ASPIRE, ASP.NET Core
+- Minimal APIs
 - Entity Framework Core + MS SQL Server
 - Fluent Validations
 - Fluent Assertions
@@ -53,6 +54,7 @@ Business Logic based on features
 - Pass the CancellationToken and call `cancellationToken.ThrowIfCancellationRequested();` during heavy workload (loops).
 - Always use `Record` for the Commands/Request/Queries
 - Add a validator for the Commands/Request/Queries based on `docs/specs/*<name>*.md`.
+- Every new endpoint requires Authorization
 
 ## Feature Workflow
 
