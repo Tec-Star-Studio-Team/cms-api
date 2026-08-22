@@ -1,12 +1,12 @@
 ---
 name: implement-feature
-description: Implement a CRUD feature by name or slug (e.g. "001-projects" or "projects"), following this project's PRD → Spec → Implementation → Verification → Commit/Push workflow. Use when the developer asks to implement, build, or finish a specific feature by name.
+description: Implement a CRUD feature by name or slug (e.g. "001-languages" or "languages"), following this languages's PRD → Spec → Implementation → Verification → Commit/Push workflow. Use when the developer asks to implement, build, or finish a specific feature by name.
 ---
 
 # Implement Feature
 
-You will receive a feature name or slug as an argument (e.g. `001-projects`
-or `projects`).
+You will receive a feature name or slug as an argument (e.g. `001-languages`
+or `languages`).
 
 1. Find the PRD matching `docs/prd/*<name>*.md` and the Spec matching
    `docs/specs/*<name>*.md`. If either file doesn't exist, stop and ask the

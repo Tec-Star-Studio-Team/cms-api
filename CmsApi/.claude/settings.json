@@ -1,24 +1,24 @@
 {
   "permissions": {
     "ask": [
-	  "Edit(CmsApi.Server/Properties/**)",
-      "Edit(CmsApi.Server/Program.cs)"
-	  "Edit(CmsApi.Server/appsettings.json)"
-	  "Edit(CmsApi.Server/appsettings.Development.json)"
+      "Edit(CmsApi.Server/Properties/**)",
+      "Edit(CmsApi.Server/Program.cs)",
+      "Edit(CmsApi.Server/appsettings.json)",
+      "Edit(CmsApi.Server/appsettings.Development.json)",
       "Write(CmsApi.Server/Properties/**)",
-      "Write(CmsApi.Server/Program.cs)"
-	  "Write(CmsApi.Server/appsettings.json)"
-	  "Write(CmsApi.Server/appsettings.Development.json)"
+      "Write(CmsApi.Server/Program.cs)",
+      "Write(CmsApi.Server/appsettings.json)",
+      "Write(CmsApi.Server/appsettings.Development.json)"
     ],
     "allow": [
       "Bash(git add:*)",
-      "Bash(git commit:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [
       "Bash(git push origin main:*)",
       "Bash(git push --force:*)",
-      "Bash(git push -f:*)"
-	  "Bash(git push origin feature/*:*)"
+      "Bash(git push -f:*)",
+      "Bash(git push origin feature/*:*)"
     ]
   }
 }
