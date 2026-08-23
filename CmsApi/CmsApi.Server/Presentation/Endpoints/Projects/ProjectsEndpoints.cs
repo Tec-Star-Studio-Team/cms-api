@@ -1,6 +1,7 @@
 ﻿using CmsApi.Server.Application.Features.Projects.Commands.CreateProject;
 using CmsApi.Server.Application.Features.Projects.Commands.DeleteProject;
 using CmsApi.Server.Application.Features.Projects.Commands.EditProject;
+using CmsApi.Server.Application.Features.Projects.Queries.GetPaginatedProjects;
 using CmsApi.Server.Application.Features.Projects.Queries.GetProjectById;
 using CmsApi.Server.Presentation.Extensions;
 using FluentValidation;
@@ -43,6 +44,15 @@ public class ProjectsEndpoints : IEndpoint
         .WithName("Get")
         .WithSummary("Get by ID")
         .RequireAuthorization();
+
+        group.MapGet("/", async ([AsParameters] GetPaginatedProjectsQuery query, IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var result = await mediator.Send(query, cancellationToken);
+            return Results.Ok(result);
+        })
+        .WithName("Get all")
+        .WithSummary("Get paginated")
+        .AllowAnonymous();
 
         group.MapDelete("/{id}", async (int id, IMediator mediator, CancellationToken cancellationToken) =>
         {
