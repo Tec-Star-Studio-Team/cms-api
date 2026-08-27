@@ -1,5 +1,8 @@
-﻿using CmsApi.Server.Application.Features.Project.Commands.CreateProject;
-using CmsApi.Server.Application.Features.Project.Queries.GetProjectById;
+﻿using CmsApi.Server.Application.Features.Projects.Commands.CreateProject;
+using CmsApi.Server.Application.Features.Projects.Commands.DeleteProject;
+using CmsApi.Server.Application.Features.Projects.Commands.EditProject;
+using CmsApi.Server.Application.Features.Projects.Queries.GetPaginatedProjects;
+using CmsApi.Server.Application.Features.Projects.Queries.GetProjectById;
 using CmsApi.Server.Presentation.Extensions;
 using FluentValidation;
 using Mediator;
@@ -40,6 +43,41 @@ public class ProjectsEndpoints : IEndpoint
         })
         .WithName("Get")
         .WithSummary("Get by ID")
+        .RequireAuthorization();
+
+        group.MapGet("/", async ([AsParameters] GetPaginatedProjectsQuery query, IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var result = await mediator.Send(query, cancellationToken);
+            return Results.Ok(result);
+        })
+        .WithName("Get all")
+        .WithSummary("Get paginated")
+        .AllowAnonymous();
+
+        group.MapDelete("/{id}", async (int id, IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var command = new DeleteProjectCommand(id);
+            var validator = new DeleteProjectValidator();
+            await validator.ValidateAndThrowAsync(command, cancellationToken);
+
+            var result = await mediator.Send(command, cancellationToken);
+            return result.ToHttpResult();
+        })
+        .WithName("Delete")
+        .WithSummary("Delete by ID")
+        .RequireAuthorization();
+
+        group.MapPut("/{id}", async (int id, EditProjectCommand command, IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            command.Id = id;
+            var validator = new EditProjectValidator();
+            await validator.ValidateAndThrowAsync(command, cancellationToken);
+
+            var result = await mediator.Send(command);
+            return result.ToHttpResult();
+        })
+        .WithName("Edit")
+        .WithSummary("Edit an existing project")
         .RequireAuthorization();
     }
 }

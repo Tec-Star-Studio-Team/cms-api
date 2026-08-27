@@ -3,21 +3,21 @@ using Mediator;
 
 namespace CmsApi.Application.Common.Behaviors;
 
-public sealed class ValidationBehavior<TRequest, TResponse>
-    : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : IRequest<TResponse>
+public sealed class ValidationBehavior<TMessage, TResponse>
+    : IPipelineBehavior<TMessage, TResponse>
+    where TMessage : notnull, IMessage // ← IMessage covers ICommand, IQuery, IRequest
 {
-    private readonly IEnumerable<IValidator<TRequest>> _validators;
+    private readonly IEnumerable<IValidator<TMessage>> _validators;
 
-    public ValidationBehavior(IEnumerable<IValidator<TRequest>> validators)
+    public ValidationBehavior(IEnumerable<IValidator<TMessage>> validators)
         => _validators = validators;
 
-    public async ValueTask<TResponse> Handle(TRequest message, MessageHandlerDelegate<TRequest, TResponse> next, CancellationToken cancellationToken)
+    public async ValueTask<TResponse> Handle(TMessage message, MessageHandlerDelegate<TMessage, TResponse> next, CancellationToken cancellationToken)
     {
         if (!_validators.Any())
             return await next(message, cancellationToken);
 
-        var context = new ValidationContext<TRequest>(message);
+        var context = new ValidationContext<TMessage>(message);
 
         var failures = _validators
             .Select(v => v.Validate(context))

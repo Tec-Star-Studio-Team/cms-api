@@ -4,7 +4,7 @@ using CmsApi.Server.Infrastructure.Persistence;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
 
-namespace CmsApi.Server.Application.Features.Project.Queries.GetProjectById;
+namespace CmsApi.Server.Application.Features.Projects.Queries.GetProjectById;
 
 public sealed class GetProjectByIdHandler(AppDbContext appDbContext) : IQueryHandler<GetProjectByIdQuery, Result<ProjectResponseDto>>
 {

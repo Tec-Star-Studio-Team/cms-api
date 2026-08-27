@@ -1,10 +1,8 @@
-using CmsApi.Application.Common.Behaviors;
 using CmsApi.Infrastructure;
 using CmsApi.Presentation.Middleware;
 using CmsApi.Server.Infrastructure.Persistence;
 using CmsApi.Server.Presentation;
 using FluentValidation;
-using Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 using Scalar.AspNetCore;
@@ -14,14 +12,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddPresentation(builder.Configuration);
-
-// Validation pipeline behavior
-builder.Services.AddTransient(
-    typeof(IPipelineBehavior<,>),
-    typeof(ValidationBehavior<,>));
-
-// FluentValidation — scans all validators in the assembly
-builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 // Add service defaults & Aspire client integrations.
 builder.AddServiceDefaults();
