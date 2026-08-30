@@ -111,7 +111,7 @@ jobs:
 
       - name: Run unit tests with coverage
         run: |
-          dotnet test CmsApi.Tests.Unit \
+          dotnet test CmsApi.Tests \
             --no-restore \
             --configuration Release \
             --filter "Category=Unit" \
@@ -192,7 +192,7 @@ jobs:
 
       - name: Run integration tests
         run: |
-          dotnet test CmsApi.Tests.Integration \
+          dotnet test CmsApi.Tests \
             --no-restore \
             --configuration Release \
             --filter "Category=Integration" \
