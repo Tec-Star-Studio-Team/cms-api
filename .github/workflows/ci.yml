@@ -1,0 +1,218 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main]
+
+# Cancel in-progress runs when a new push is made to the same PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_VERSION: "10.x"
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_NOLOGO: true
+  # Minimum coverage threshold (percentage)
+  COVERAGE_THRESHOLD: 80
+
+jobs:
+  # JOB 1 - Build
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: CmsApi #.sln location
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Cache Nuget packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build solution
+        run: dotnet build --no-restore --configuration Release
+
+  # JOB 2 - Lint
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    needs: build #only runs if build passes
+    defaults:
+      run:
+        working-directory: CmsApi #.sln location
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Cache Nuget packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      # Fails if any file is not formatted correctly
+      - name: Check formatting
+        run: dotnet format --verify-no-changes --verbosity diagnostic
+
+  # JOB 3 - Unit tests
+  unit-tests:
+    name: "Unit Tests"
+    runs-on: ubuntu-latest
+    needs: build
+    defaults:
+      run:
+        working-directory: CmsApi
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/CmsApi/**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Run unit tests with coverage
+        run: |
+          dotnet test CmsApi.Tests \
+            --no-restore \
+            --configuration Release \
+            --filter "Category=Unit" \
+            --collect: "XPlat Code Coverage" \
+            --results-directory ./coverage \
+            --logger "trx;LogFileName=unit-tests.trx"
+
+      - name: Install coverage report tool
+        run: dotnet tool install --global dotnet-reportgenerator-globaltool
+
+      - name: Generate coverage report
+        run: |
+          reportgenerator \
+          -reports:"./coverage/**/coverage.cobertura.xml" \
+          -targetdir:"./coverage/report" \
+          -reporttypes:"Html;Cobertura;TextSummary"
+
+      - name: Check coverage threshold
+        run: |
+          COVERAGE=$(cat ./coverage/report/Summary.txt \
+            | grep "Line coverage" \
+            | grep -oP '\d+\.\d+(?=%)' \
+            | head -1)
+
+          echo "Coverage: $COVERAGE%"
+          echo "Threshold: ${{ env.COVERAGE_THRESHOLD }}%"
+
+          if (( $(echo "$COVERAGE < ${{ env.COVERAGE_THRESHOLD }}" | bc -l) )); then
+            echo "❌ Coverage $COVERAGE% is below threshold ${{ env.COVERAGE_THRESHOLD }}%"
+            exit 1
+          fi
+
+          echo "✅ Coverage $COVERAGE% meets threshold"
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: CmsApi/coverage/report
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-test-results
+          path: CmsApi/coverage/unit-tests.trx
+
+      - name: Publish test results on PR
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Unit Test Results
+          path: CmsApi/coverage/unit-tests.trx
+          reporter: dotnet-trx # ← reads .trx format natively
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  # JOB 4 — Integration Tests
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    defaults:
+      run:
+        working-directory: CmsApi
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/CmsApi/**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Pull SQL Server image
+        run: docker pull mcr.microsoft.com/mssql/server:2019-latest
+
+      - name: Run integration tests
+        run: |
+          dotnet test CmsApi.Tests \
+            --no-restore \
+            --configuration Release \
+            --filter "Category=Integration" \
+            --logger "trx;LogFileName=integration-tests.trx" \
+            --results-directory ./integration-results
+        env:
+          DOCKER_HOST: unix:///var/run/docker.sock
+
+      - name: Upload integration test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: integration-test-results
+          path: CmsApi/integration-results/integration-tests.trx
