@@ -1,0 +1,43 @@
+name: PR Title
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+jobs:
+  validate:
+    name: Validate PR Title (Conventional Commits)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check PR title format
+        run: |
+          # Get the source branch name of the PR
+          BRANCH="${{ github.head_ref }}"
+
+          # Pattern: type/one-or-more-words-separated-by-hyphens
+          # Examples:
+          #   feature/user-authentication
+          #   feature/1234-add-pagination
+          #   fix/1234-correct-jwt-validation
+          PATTERN="^(feature|fix|hotfix|bugfix|chore|docs|refactor|test|release)\/[a-z0-9]+(-[a-z0-9]+)*$"
+
+          if [[ ! "$BRANCH" =~ $PATTERN ]]; then
+            echo "❌ Branch name does not follow the required pattern"
+            echo ""
+            echo "Branch: $BRANCH"
+            echo ""
+            echo "Expected pattern: type/xxxx-yyyy-zzzz"
+            echo ""
+            echo "Valid types: feature, fix, hotfix, bugfix, chore, docs, refactor, test, release"
+            echo ""
+            echo "Examples:"
+            echo "  feature/user-authentication"
+            echo "  feature/1234-add-pagination"
+            echo "  fix/correct-jwt-validation"
+            echo "  hotfix/1234-security-patch"
+            echo "  chore/update-nuget-packages"
+            exit 1
+          fi
+
+          echo "✅ Branch name is valid: $BRANCH"
