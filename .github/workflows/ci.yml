@@ -80,3 +80,130 @@ jobs:
       # Fails if any file is not formatted correctly
       - name: Check formatting
         run: dotnet format --verify-no-changes --verbosity diagnostic
+
+  # JOB 3 - Unit tests
+  unit-tests:
+    name: "Unit Tests"
+    runs-on: ubuntu-latest
+    needs: build
+    defaults:
+      run:
+        working-directory: CmsApi
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/CmsApi/**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Run unit tests with coverage
+        run: |
+          dotnet test CmsApi.Tests.Unit \
+            --no-restore \
+            --configuration Release \
+            --filter "Category=Unit" \
+            --collect: "XPlat Code Coverage" \
+            --results-directory ./coverage \
+            --logger "trx;LogFileName=unit-tests.trx"
+
+      - name: Install coverage report tool
+        run: dotnet tool install --global dotnet-reportgenerator-globaltool
+
+      - name: Generate coverage report
+        run: |
+          reportgenerator \
+          -reports:"./coverage/**/coverage.cobertura.xml" \
+          -targetdir:"./coverage/report" \
+          -reporttypes:"Html;Covertura;TextSummary"
+
+      - name: Check coverage threshold
+        run: |
+          COVERAGE=$(cat ./coverage/report/Summary.txt \
+            | grep "Line coverage" \
+            | grep -oP '\d+\.\d+(?=%)' \
+            | head -1)
+
+          echo "Coverage: $COVERAGE%"
+          echo "Threshold: ${{ env.COVERAGE_THRESHOLD }}%"
+
+          if (( $(echo "$COVERAGE < ${{ env.COVERAGE_THRESHOLD }}" | bc -l) )); then
+            echo "❌ Coverage $COVERAGE% is below threshold ${{ env.COVERAGE_THRESHOLD }}%"
+            exit 1
+          fi
+
+          echo "✅ Coverage $COVERAGE% meets threshold"
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: CmsApi/coverage/report
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-test-results
+          path: CmsApi/coverage/unit-tests.trx
+
+  # JOB 4 — Integration Tests
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    defaults:
+      run:
+        working-directory: CmsApi
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/CmsApi/**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Pull SQL Server image
+        run: docker pull mcr.microsoft.com/mssql/server:2019-latest
+
+      - name: Run integration tests
+        run: |
+          dotnet test CmsApi.Tests.Integration \
+            --no-restore \
+            --configuration Release \
+            --filter "Category=Integration" \
+            --logger "trx;LogFileName=integration-tests.trx" \
+            --results-directory ./integration-results
+        env:
+          DOCKER_HOST: unix:///var/run/docker.sock
+
+      - name: Upload integration test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: integration-test-results
+          path: CmsApi/integration-results/integration-tests.trx
