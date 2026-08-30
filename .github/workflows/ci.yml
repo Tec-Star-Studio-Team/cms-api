@@ -127,7 +127,7 @@ jobs:
           reportgenerator \
           -reports:"./coverage/**/coverage.cobertura.xml" \
           -targetdir:"./coverage/report" \
-          -reporttypes:"Html;Covertura;TextSummary"
+          -reporttypes:"Html;Cobertura;TextSummary"
 
       - name: Check coverage threshold
         run: |
