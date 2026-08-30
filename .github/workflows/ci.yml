@@ -216,3 +216,12 @@ jobs:
         with:
           name: integration-test-results
           path: CmsApi/integration-results/integration-tests.trx
+
+      - name: Publish test results on PR
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Unit Test Results
+          path: CmsApi/integration-results/integration-tests.trx
+          reporter: dotnet-trx # ← reads .trx format natively
+          token: ${{ secrets.GITHUB_TOKEN }}
