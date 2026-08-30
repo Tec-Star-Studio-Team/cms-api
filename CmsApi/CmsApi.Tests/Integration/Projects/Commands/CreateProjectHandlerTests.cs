@@ -5,6 +5,7 @@ using System.Net.Http.Json;
 
 namespace CmsApi.Tests.Integration.Projects.Commands;
 
+[Trait("Category", "Integration")]
 [Collection(nameof(SqlServerCollection))]
 public sealed class CreateProjectHandlerTests : IAsyncLifetime
 {
