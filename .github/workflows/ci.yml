@@ -159,6 +159,15 @@ jobs:
           name: unit-test-results
           path: CmsApi/coverage/unit-tests.trx
 
+      - name: Publish test results on PR
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Unit Test Results
+          path: CmsApi/coverage/unit-tests.trx
+          reporter: dotnet-trx # ← reads .trx format natively
+          token: ${{ secrets.GITHUB_TOKEN }}
+
   # JOB 4 — Integration Tests
   integration-tests:
     name: Integration Tests
