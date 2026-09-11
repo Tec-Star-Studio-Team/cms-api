@@ -6,6 +6,8 @@ using CmsApi.Server.Application.Features.Projects.Queries.GetProjectById;
 using CmsApi.Server.Presentation.Extensions;
 using FluentValidation;
 using Mediator;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace CmsApi.Server.Presentation.Endpoints.Projects;
 
@@ -45,10 +47,15 @@ public class ProjectsEndpoints : IEndpoint
         .WithSummary("Get by ID")
         .RequireAuthorization();
 
-        group.MapGet("/", async ([AsParameters] GetPaginatedProjectsQuery query, IMediator mediator, CancellationToken cancellationToken) =>
+        group.MapGet("/", async ([AsParameters] GetPaginatedProjectsQuery query, [FromServices] IMemoryCache memoryCache, IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var result = await mediator.Send(query, cancellationToken);
-            return Results.Ok(result);
+            var projects = await memoryCache.GetOrCreateAsync($"projects-all", async (cacheEntry) =>
+            {
+                cacheEntry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(30);
+                return await mediator.Send(query, cancellationToken);
+            });
+
+            return Results.Ok(projects);
         })
         .WithName("Get all")
         .WithSummary("Get paginated")
