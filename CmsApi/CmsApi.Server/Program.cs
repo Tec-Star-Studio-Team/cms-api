@@ -13,6 +13,8 @@ builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddPresentation(builder.Configuration);
 
+builder.Services.AddMemoryCache();
+
 // Add service defaults & Aspire client integrations.
 builder.AddServiceDefaults();
 
