@@ -15,6 +15,5 @@ builder.AddProject<Projects.CmsApi_Server>("server")
     .WithReference(sqlServer)
     .WithHttpHealthCheck("/health")
     .WithExternalHttpEndpoints();
-//test
 
 builder.Build().Run();
