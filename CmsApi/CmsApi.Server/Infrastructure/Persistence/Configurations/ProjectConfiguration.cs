@@ -1,4 +1,5 @@
 ﻿using CmsApi.Server.Domain.Entities;
+using CmsApi.Server.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -18,12 +19,23 @@ public sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .ValueGeneratedOnAdd();
 
         // Properties
-        builder.Property(p => p.Name)
-            .IsRequired()
-            .HasMaxLength(200);
 
-        builder.Property(p => p.Description)
-            .HasMaxLength(2000);
+        // OwnsOne — EF Core understands the Value Object structure
+        // and can translate p.Name.Value in LINQ queries
+        builder.OwnsOne(p => p.Name, name =>
+        {
+            name.Property(n => n.Value)
+                .HasColumnName("Name") // ← stored as single column
+                .IsRequired()
+                .HasMaxLength(ProjectName.MaxLength);
+        });
+
+        builder.OwnsOne(p => p.Description, desc =>
+        {
+            desc.Property(d => d.Value)
+                .HasColumnName("Description")
+                .HasMaxLength(ProjectDescription.MaxLength);
+        });
 
         builder.Property(p => p.CreatedAt)
             .IsRequired();
