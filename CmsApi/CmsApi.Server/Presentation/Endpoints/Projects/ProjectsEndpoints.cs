@@ -24,7 +24,7 @@ public class ProjectsEndpoints : IEndpoint
         {
             var result = await mediator.Send(command, cancellationToken);
 
-            return result.ToHttpResult();
+            return result.IsSuccess ? Results.Created() : result.ToHttpResult();
         })
         .WithName("Create")
         .WithSummary("Create a new project")
