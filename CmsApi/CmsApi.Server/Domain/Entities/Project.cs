@@ -1,4 +1,5 @@
 ﻿using CmsApi.Server.Domain.Common;
+using CmsApi.Server.Domain.ValueObjects;
 
 namespace CmsApi.Server.Domain.Entities;
 
@@ -6,23 +7,24 @@ public sealed class Project : BaseEntity<int>
 {
     public Project() { }
 
-    public string Name { get; set; } = string.Empty;
+    public ProjectName Name { get; private set; } = null!;
 
-    public string Description { get; set; } = string.Empty;
+    public ProjectDescription Description { get; private set; } = null!;
 
     public static Project Create(string name, string description)
     {
         return new Project()
         {
-            Name = name,
-            Description = description
+            Name = ProjectName.Create(name),
+            Description = ProjectDescription.Create(description)
         };
     }
 
     public void Update(string name, string description)
     {
-        this.Name = name;
-        this.Description = description;
-        this.SetUpdatedAt();
+        Name = ProjectName.Create(name);
+        Description = ProjectDescription.Create(description);
+
+        SetUpdatedAt();
     }
 }

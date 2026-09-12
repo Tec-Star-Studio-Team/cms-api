@@ -1,5 +1,6 @@
-﻿using Mediator;
+﻿using CmsApi.Server.Application.Common.Models;
+using Mediator;
 
 namespace CmsApi.Server.Application.Features.Projects.Commands.CreateProject;
 
-public sealed record CreateProjectCommand(string Name, string Description) : ICommand;
+public sealed record CreateProjectCommand(string Name, string Description) : ICommand<Result<Unit>>;

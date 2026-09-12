@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using CmsApi.Server.Domain.Exceptions;
+using FluentValidation;
 using System.Text.Json;
 
 namespace CmsApi.Presentation.Middleware;
@@ -21,6 +22,13 @@ public sealed class ExceptionHandlingMiddleware
         try
         {
             await _next(context);
+        }
+        catch (DomainException ex)
+        {
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            context.Response.ContentType = "application/json";
+
+            await context.Response.WriteAsync(JsonSerializer.Serialize(new { error = ex.Message }));
         }
         catch (ValidationException ex)
         {

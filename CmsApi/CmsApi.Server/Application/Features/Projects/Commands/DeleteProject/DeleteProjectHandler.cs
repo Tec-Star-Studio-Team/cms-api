@@ -1,5 +1,6 @@
 ﻿using CmsApi.Server.Application.Common.Models;
 using CmsApi.Server.Domain.Entities;
+using CmsApi.Server.Domain.Errors;
 using CmsApi.Server.Domain.Interfaces.Repositories;
 using Mediator;
 
@@ -11,7 +12,7 @@ public sealed class DeleteProjectHandler(IUnitOfWork unitOfWork, IRepository<Pro
     {
         var project = await repository.GetByIdAsync(command.ProjectId, cancellationToken);
         if (project is null)
-            return Result<Unit>.NotFound($"Project with ID {command.ProjectId} not found.");
+            return Result<Unit>.NotFound(string.Format(ProjectErrors.General.NotFound, command.ProjectId));
 
         repository.Delete(project);
 
