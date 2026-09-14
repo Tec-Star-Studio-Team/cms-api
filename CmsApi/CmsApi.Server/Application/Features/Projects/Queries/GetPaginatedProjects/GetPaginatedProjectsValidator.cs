@@ -6,10 +6,6 @@ public sealed class GetPaginatedProjectsValidator : AbstractValidator<GetPaginat
 {
     public GetPaginatedProjectsValidator()
     {
-        RuleFor(p => p.Page)
-            .GreaterThan(0)
-            .WithMessage("The page must be greater than zero");
-
         RuleFor(p => p.PageSize)
             .GreaterThan(0)
             .WithMessage("The page size must be greater than zero.");

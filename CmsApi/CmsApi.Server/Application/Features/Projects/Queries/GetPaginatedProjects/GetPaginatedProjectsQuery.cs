@@ -4,4 +4,4 @@ using Mediator;
 
 namespace CmsApi.Server.Application.Features.Projects.Queries.GetPaginatedProjects;
 
-public sealed record GetPaginatedProjectsQuery(int Page, int PageSize) : IQuery<OffSetPagedResult<ProjectDto>>;
+public sealed record GetPaginatedProjectsQuery(int LastId, int PageSize) : IQuery<OffSetPagedResult<ProjectDto>>;

@@ -44,8 +44,8 @@ public static class DependencyInjection
                 policy
                     .WithOrigins("http://localhost:3000",  // React
                                  "http://localhost:5173")  // Vite
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()
+                    .WithHeaders("Authorization", "Content-Type")
+                    .WithMethods("GET", "POST", "PUT", "PATCH", "DELETE")
                     .AllowCredentials();
             });
 
@@ -58,7 +58,7 @@ public static class DependencyInjection
 
                 policy
                     .WithOrigins(allowedOrigins)
-                    .AllowAnyHeader()
+                    .WithHeaders("Authorization", "Content-Type")
                     .WithMethods("GET", "POST", "PUT", "PATCH", "DELETE")
                     .AllowCredentials();
             });

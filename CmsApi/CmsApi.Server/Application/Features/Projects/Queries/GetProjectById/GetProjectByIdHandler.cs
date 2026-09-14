@@ -11,8 +11,10 @@ public sealed class GetProjectByIdHandler(AppDbContext appDbContext) : IQueryHan
     public async ValueTask<Result<ProjectResponseDto>> Handle(GetProjectByIdQuery query, CancellationToken cancellationToken)
     {
         var project = await appDbContext.Projects
+            .TagWith("GetProjectByIdHandler::FirstOrDefault")
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == query.ProjectId, cancellationToken);
+
 
         if (project is null)
             return Result<ProjectResponseDto>.NotFound($"Project {query.ProjectId} not found.");

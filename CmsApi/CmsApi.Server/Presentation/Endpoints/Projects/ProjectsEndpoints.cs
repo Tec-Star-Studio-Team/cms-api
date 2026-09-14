@@ -49,7 +49,7 @@ public class ProjectsEndpoints : IEndpoint
 
         group.MapGet("/", async ([AsParameters] GetPaginatedProjectsQuery query, [FromServices] IMemoryCache memoryCache, IMediator mediator, CancellationToken cancellationToken) =>
         {
-            var projects = await memoryCache.GetOrCreateAsync($"projects-all", async (cacheEntry) =>
+            var projects = await memoryCache.GetOrCreateAsync($"projects-all:lastId::{query.LastId}:pageSize::{query.PageSize}", async (cacheEntry) =>
             {
                 cacheEntry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(30);
                 return await mediator.Send(query, cancellationToken);

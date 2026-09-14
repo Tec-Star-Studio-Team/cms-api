@@ -10,31 +10,24 @@ public sealed class GetPaginatedProjectsHandler(AppDbContext appDbContext) : IQu
 {
     public async ValueTask<OffSetPagedResult<ProjectDto>> Handle(GetPaginatedProjectsQuery query, CancellationToken cancellationToken)
     {
+        int lastId = query.LastId;
+
         var baseQuery = appDbContext
             .Projects
-            .AsNoTracking()
-            .OrderBy(p => p.Id);
-
-        var countTask = await baseQuery.CountAsync(cancellationToken);
-
-        var itemsTask = await baseQuery
-            .Skip((query.Page - 1) * query.PageSize)
+            .Where(p => lastId == 0 || p.Id > lastId)
+            .OrderBy(p => p.Id)
             .Take(query.PageSize)
             .Select(p => new ProjectDto(p.Id, p.Name, p.Description))
-            .ToListAsync(cancellationToken);
+            .AsNoTracking();
 
-        var totalCount = countTask;
-        var items = itemsTask;
-        var totalPages = (int)Math.Ceiling(totalCount / (double)query.PageSize);
+        // ToQueryString(): Used for debugging only
+        var queryString = baseQuery.ToQueryString();
+
+        var items = await baseQuery.ToListAsync(cancellationToken);
 
         return new OffSetPagedResult<ProjectDto>(
             items: items,
-            Page: query.Page,
-            PageSize: query.PageSize,
-            TotalCount: totalCount,
-            TotalPages: totalPages,
-            HasNextPage: query.Page < totalPages,
-            HasPreviousPage: query.Page > 1
+            LastId: items.LastOrDefault()?.Id ?? 0
         );
     }
 }
