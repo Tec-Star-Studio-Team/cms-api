@@ -6,7 +6,7 @@ namespace CmsApi.Server.Domain.ValueObjects;
 
 public class ProjectDescription : ValueObject<string>
 {
-    public const int MaxLength = 2000;
+    public const int MAX_LENGTH = 2000;
 
     private ProjectDescription(string value) : base(value) { }
 
@@ -17,9 +17,9 @@ public class ProjectDescription : ValueObject<string>
 
         value = value.Trim();
 
-        if (value.Length > MaxLength)
+        if (value.Length > MAX_LENGTH)
             throw new DomainException(
-                string.Format(ProjectErrors.Description.TooLong, MaxLength));
+                string.Format(ProjectErrors.Description.TooLong, MAX_LENGTH));
 
         return new ProjectDescription(value);
     }

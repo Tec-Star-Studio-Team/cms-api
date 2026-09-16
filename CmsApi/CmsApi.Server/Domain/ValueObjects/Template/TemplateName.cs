@@ -1,0 +1,29 @@
+﻿using CmsApi.Server.Domain.Common;
+using CmsApi.Server.Domain.Errors;
+using CmsApi.Server.Domain.Exceptions;
+
+namespace CmsApi.Server.Domain.ValueObjects.Template;
+
+public class TemplateName : ValueObject<string>
+{
+    public const int MAX_LENGTH = 200;
+    public const int MIN_LENGTH = 3;
+
+    private TemplateName(string value) : base(value) { }
+
+    public static TemplateName Create(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            throw new DomainException(TemplateErrors.Name.Empty);
+
+        value = value.Trim();
+
+        if (value.Length < MIN_LENGTH)
+            throw new DomainException(string.Format(TemplateErrors.Name.TooShort, MIN_LENGTH));
+
+        if (value.Length > MAX_LENGTH)
+            throw new DomainException(string.Format(TemplateErrors.Name.TooLong, MAX_LENGTH));
+
+        return new TemplateName(value);
+    }
+}

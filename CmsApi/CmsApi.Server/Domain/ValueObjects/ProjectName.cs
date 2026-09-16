@@ -6,8 +6,8 @@ namespace CmsApi.Server.Domain.ValueObjects;
 
 public class ProjectName : ValueObject<string>
 {
-    public const int MaxLength = 200;
-    public const int MinLength = 3;
+    public const int MAX_LENGTH = 200;
+    public const int MIN_LENGTH = 3;
 
     private ProjectName(string value) : base(value) { }
 
@@ -18,13 +18,13 @@ public class ProjectName : ValueObject<string>
 
         value = value.Trim();
 
-        if (value.Trim().Length < MinLength)
+        if (value.Length < MIN_LENGTH)
             throw new DomainException(
-                string.Format(ProjectErrors.Name.TooShort, MinLength));
+                string.Format(ProjectErrors.Name.TooShort, MIN_LENGTH));
 
-        if (value.Trim().Length > MaxLength)
+        if (value.Length > MAX_LENGTH)
             throw new DomainException(
-                string.Format(ProjectErrors.Name.TooLong, MaxLength));
+                string.Format(ProjectErrors.Name.TooLong, MAX_LENGTH));
 
         return new ProjectName(value);
     }
