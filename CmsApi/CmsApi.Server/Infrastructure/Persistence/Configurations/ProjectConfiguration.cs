@@ -27,14 +27,14 @@ public sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
             name.Property(n => n.Value)
                 .HasColumnName("Name") // ← stored as single column
                 .IsRequired()
-                .HasMaxLength(ProjectName.MaxLength);
+                .HasMaxLength(ProjectName.MAX_LENGTH);
         });
 
         builder.OwnsOne(p => p.Description, desc =>
         {
             desc.Property(d => d.Value)
                 .HasColumnName("Description")
-                .HasMaxLength(ProjectDescription.MaxLength);
+                .HasMaxLength(ProjectDescription.MAX_LENGTH);
         });
 
         builder.Property(p => p.CreatedAt)
