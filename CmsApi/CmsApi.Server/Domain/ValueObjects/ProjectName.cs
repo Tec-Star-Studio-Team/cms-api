@@ -18,13 +18,8 @@ public class ProjectName : ValueObject<string>
 
         value = value.Trim();
 
-        if (value.Length < MIN_LENGTH)
-            throw new DomainException(
-                string.Format(ProjectErrors.Name.TooShort, MIN_LENGTH));
-
-        if (value.Length > MAX_LENGTH)
-            throw new DomainException(
-                string.Format(ProjectErrors.Name.TooLong, MAX_LENGTH));
+        if (value.Length < MIN_LENGTH || value.Length > MAX_LENGTH)
+            throw new DomainException(string.Format(ProjectErrors.Name.InvalidLength, MIN_LENGTH, MAX_LENGTH));
 
         return new ProjectName(value);
     }

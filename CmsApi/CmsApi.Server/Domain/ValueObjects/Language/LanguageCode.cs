@@ -17,11 +17,8 @@ public sealed class LanguageCode : ValueObject<string>
         if (string.IsNullOrWhiteSpace(value))
             throw new DomainException(LanguageErrors.Code.Empty);
 
-        if (value.Length > MAX_LENGTH)
-            throw new DomainException(string.Format(LanguageErrors.Code.TooLong, MAX_LENGTH));
-
-        if (value.Length < MIN_LENGTH)
-            throw new DomainException(string.Format(LanguageErrors.Code.TooShort, MIN_LENGTH));
+        if (value.Length < MIN_LENGTH || value.Length > MAX_LENGTH)
+            throw new DomainException(string.Format(LanguageErrors.Code.InvalidLength, MIN_LENGTH, MAX_LENGTH));
 
         if (!LanguageHelper.Exists(value))
             throw new DomainException(string.Format(LanguageErrors.Code.IsNotValid, value));

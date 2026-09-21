@@ -17,11 +17,8 @@ public sealed class LanguageName : ValueObject<string>
         if (string.IsNullOrWhiteSpace(value))
             throw new DomainException(LanguageErrors.Code.Empty);
 
-        if (value.Length > MAX_LENGTH)
-            throw new DomainException(string.Format(LanguageErrors.Code.TooLong, MAX_LENGTH));
-
-        if (value.Length < MIN_LENGTH)
-            throw new DomainException(string.Format(LanguageErrors.Code.TooLong, MIN_LENGTH));
+        if (value.Length < MIN_LENGTH || value.Length > MAX_LENGTH)
+            throw new DomainException(string.Format(LanguageErrors.Name.InvalidLength, MIN_LENGTH, MAX_LENGTH));
 
         value = Regex.Replace(value.Trim(), @"\s+", " ");
 

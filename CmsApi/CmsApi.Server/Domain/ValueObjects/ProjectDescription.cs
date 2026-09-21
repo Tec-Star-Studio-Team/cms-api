@@ -19,7 +19,7 @@ public class ProjectDescription : ValueObject<string>
 
         if (value.Length > MAX_LENGTH)
             throw new DomainException(
-                string.Format(ProjectErrors.Description.TooLong, MAX_LENGTH));
+                string.Format(ProjectErrors.Description.InvalidLength, MAX_LENGTH));
 
         return new ProjectDescription(value);
     }
