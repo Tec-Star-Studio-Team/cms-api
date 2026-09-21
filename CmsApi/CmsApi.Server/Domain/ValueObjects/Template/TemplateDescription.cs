@@ -18,11 +18,8 @@ public class TemplateDescription : ValueObject<string>
 
         value = value.Trim();
 
-        if (value.Length < MIN_LENGTH)
-            throw new DomainException(string.Format(TemplateErrors.Description.TooShort, MIN_LENGTH));
-
-        if (value.Length > MAX_LENGTH)
-            throw new DomainException(string.Format(TemplateErrors.Description.TooLong, MAX_LENGTH));
+        if (value.Length < MIN_LENGTH || value.Length > MAX_LENGTH)
+            throw new DomainException(string.Format(TemplateErrors.Description.InvalidLength, MIN_LENGTH, MAX_LENGTH));
 
         return new TemplateDescription(value);
     }

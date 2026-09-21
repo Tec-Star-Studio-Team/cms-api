@@ -5,8 +5,7 @@ public static class AppErrors
     public static class Name
     {
         public const string Empty = "App name cannot be empty.";
-        public const string TooShort = "App name must have at least {0} characters.";
-        public const string TooLong = "App name cannot exceed {0} characters.";
+        public const string InvalidLength = "App name must be between {0} and {1} characters.";
     }
 
     public static class General
