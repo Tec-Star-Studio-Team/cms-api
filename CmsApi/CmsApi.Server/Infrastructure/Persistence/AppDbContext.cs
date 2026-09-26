@@ -12,6 +12,8 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
 
     public DbSet<Project> Projects => Set<Project>();
 
+    public DbSet<App> Apps => Set<App>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
