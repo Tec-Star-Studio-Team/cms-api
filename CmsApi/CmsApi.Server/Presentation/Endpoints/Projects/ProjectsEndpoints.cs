@@ -26,7 +26,7 @@ public class ProjectsEndpoints : IEndpoint
 
             return result.IsSuccess ? Results.Created() : result.ToHttpResult();
         })
-        .WithName("Create")
+        .WithName("Create Project")
         .WithSummary("Create a new project")
         .RequireAuthorization();
 

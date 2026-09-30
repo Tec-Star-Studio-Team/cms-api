@@ -1,5 +1,5 @@
 ﻿using CmsApi.Server.Domain.Entities;
-using CmsApi.Server.Domain.ValueObjects.Language;
+using CmsApi.Server.Domain.ValueObjects.Template;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -25,14 +25,14 @@ public sealed class TemplateConfiguration : IEntityTypeConfiguration<Template>
             name.Property(n => n.Value)
                 .HasColumnName("Name") // ← stored as single column
                 .IsRequired()
-                .HasMaxLength(LanguageCode.MAX_LENGTH);
+                .HasMaxLength(TemplateName.MAX_LENGTH);
         });
 
         builder.OwnsOne(p => p.Description, description =>
         {
             description.Property(n => n.Value)
                 .HasColumnName("Description") // ← stored as single column
-                .HasMaxLength(LanguageName.MAX_LENGTH);
+                .HasMaxLength(TemplateDescription.MAX_LENGTH);
         });
 
         builder.Property(p => p.CreatedAt)
