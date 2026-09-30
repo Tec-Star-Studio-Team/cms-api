@@ -38,7 +38,7 @@
 
   <ItemGroup>
     <Folder Include="Application\Common\Exceptions\" />
+    <Folder Include="Application\Features\Templates\Queries\" />
     <Folder Include="Infrastructure\Persistence\Migrations\" />
-    <Folder Include="Presentation\Endpoints\Templates\" />
   </ItemGroup>
 </Project>
