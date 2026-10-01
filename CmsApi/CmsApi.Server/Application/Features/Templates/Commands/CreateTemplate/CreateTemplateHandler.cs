@@ -3,7 +3,7 @@ using CmsApi.Server.Domain.Entities;
 using CmsApi.Server.Domain.Interfaces.Repositories;
 using Mediator;
 
-namespace CmsApi.Server.Application.Features.Templates.Commands;
+namespace CmsApi.Server.Application.Features.Templates.Commands.CreateTemplate;
 
 public sealed class CreateTemplateHandler(IUnitOfWork unitOfWork, IRepository<Template, int> repository) : ICommandHandler<CreateTemplateCommand, Result<Unit>>
 {

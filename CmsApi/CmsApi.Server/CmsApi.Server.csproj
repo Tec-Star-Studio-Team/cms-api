@@ -38,6 +38,7 @@
 
   <ItemGroup>
     <Folder Include="Application\Common\Exceptions\" />
+    <Folder Include="Application\Features\Templates\Commands\EditTemplate\" />
     <Folder Include="Application\Features\Templates\Queries\" />
     <Folder Include="Infrastructure\Persistence\Migrations\" />
   </ItemGroup>

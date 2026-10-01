@@ -2,7 +2,7 @@
 using CmsApi.Server.Domain.ValueObjects.Template;
 using FluentValidation;
 
-namespace CmsApi.Server.Application.Features.Templates.Commands;
+namespace CmsApi.Server.Application.Features.Templates.Commands.CreateTemplate;
 
 public sealed class CreateTemplateValidator : AbstractValidator<CreateTemplateCommand>
 {
