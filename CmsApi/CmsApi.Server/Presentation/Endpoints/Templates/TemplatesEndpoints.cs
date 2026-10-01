@@ -1,4 +1,5 @@
-﻿using CmsApi.Server.Application.Features.Templates.Commands;
+﻿using CmsApi.Server.Application.Features.Templates.Commands.CreateTemplate;
+using CmsApi.Server.Application.Features.Templates.Commands.DeleteTemplate;
 using CmsApi.Server.Presentation.Extensions;
 using FluentValidation;
 using Mediator;
@@ -23,5 +24,17 @@ public class TemplatesEndpoints : IEndpoint
         .WithName("Create Template")
         .WithSummary("Create a new template")
         .RequireAuthorization();
+
+        group.MapDelete("/{id}", async (int id, IMediator mediator, CancellationToken cancellationToken) =>
+        {
+            var command = new DeleteTemplateCommand(id);
+            var validator = new DeleteTemplateValidator();
+            await validator.ValidateAndThrowAsync(command, cancellationToken);
+
+            var result = await mediator.Send(command, cancellationToken);
+            return result.ToHttpResult();
+        })
+        .WithName("Delete template")
+        .WithSummary("Delete a template by ID");
     }
 }
